@@ -1,0 +1,45 @@
+{
+  "name": "laravel-passport-pkce-js-client",
+  "version": "0.0.1",
+  "description": "A library to use Laravel's Passport Authorization flow (PKCE) from a Javascript web app context.",
+  "main": "dist/index.js",
+  "types": "dist/typings/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moutah/laravel-passport-pkce-js-client.git"
+  },
+  "keywords": [
+    "laravel",
+    "passport",
+    "pkce",
+    "js",
+    "front",
+    "oauth",
+    "web",
+    "Authorization Code Grant Flow",
+    "SPA authentication"
+  ],
+  "author": "moutah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Moutah/laravel-passport-pkce-js-client/issues"
+  },
+  "homepage": "https://github.com/Moutah/laravel-passport-pkce-js-client#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3"
+  }
+}
