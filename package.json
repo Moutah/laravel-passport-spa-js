@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/typings/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --coverage",
+    "test:watch": "jest --coverage --watch",
     "prepublish": "tsc",
     "build": "tsc",
     "dev": "tsc --watch"
@@ -31,14 +32,21 @@
     "url": "https://github.com/Moutah/laravel-passport-pkce-js-client/issues"
   },
   "homepage": "https://github.com/Moutah/laravel-passport-pkce-js-client#readme",
-  "dependencies": {},
+  "dependencies": {
+    "browser-tabs-lock": "^1.2.8",
+    "fast-text-encoding": "^1.0.1",
+    "unfetch": "^4.1.0"
+  },
   "devDependencies": {
+    "@types/jest": "^25.1.4",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
+    "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3"
   }

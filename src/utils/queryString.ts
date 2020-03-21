@@ -16,7 +16,7 @@ export const parseQueryResult = (queryString: string): any => {
 
   return {
     ...parsedQuery,
-    expiresIn: parseInt(parsedQuery.expires_in),
+    expires_in: parseInt(parsedQuery.expires_in),
   };
 };
 
