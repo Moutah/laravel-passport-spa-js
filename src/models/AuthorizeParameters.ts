@@ -1,27 +1,7 @@
-import {
-  encodeState,
-  createRandomString,
-  sha256,
-  bufferToBase64UrlEncoded,
-  createQueryParams,
-} from '../utils';
-
-export interface AuthorizeParametersOptions {
-  /**
-   * The Client ID.
-   */
-  client_id: string;
-
-  /**
-   * The redirect URI for this client.
-   */
-  redirect_uri: string;
-
-  /**
-   * The scope for the wanted token.
-   */
-  scope: string;
-}
+import { AuthorizeParametersOptions } from '../interfaces/AuthorizeParametersOptions';
+import { encodeState, bufferToBase64UrlEncoded } from '../utils/base64';
+import { createRandomString, sha256 } from '../utils/crypto';
+import { createQueryParams } from '../utils/queryString';
 
 export class AuthorizeParameters implements AuthorizeParametersOptions {
   public client_id: string;

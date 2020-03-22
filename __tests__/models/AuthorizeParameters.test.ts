@@ -1,12 +1,16 @@
 import 'fast-text-encoding';
-import {
-  AuthorizeParameters,
-  AuthorizeParametersOptions,
-} from '../../src/models/AuthorizeParameters';
+import { AuthorizeParameters } from '../../src/models/AuthorizeParameters';
+import { AuthorizeParametersOptions } from '../../src/interfaces/AuthorizeParametersOptions';
 
 // define global context
 declare const global: any;
 global.TextEncoder = TextEncoder;
+
+const AUTHORIZE_PARAMTERS_OPTIONS: AuthorizeParametersOptions = {
+  client_id: 'the client id',
+  redirect_uri: 'the redirect uri',
+  scope: 'the desired token scopes',
+};
 
 describe('AuthorizeParameters', () => {
   let crypto: any;
@@ -30,18 +34,13 @@ describe('AuthorizeParameters', () => {
 
   it('generates state and code_verifier', () => {
     // create parameters set
-    const options: AuthorizeParametersOptions = {
-      client_id: 'the client id',
-      redirect_uri: 'the redirect uri',
-      scope: 'the desired token scopes',
-    };
-    const paramsA = new AuthorizeParameters(options);
+    const paramsA = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
 
     // change crypto module mock
     randomValue = 2;
 
     // create other parameter set with same seed
-    const paramsB = new AuthorizeParameters(options);
+    const paramsB = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
 
     // state is set
     expect(paramsA.state).toBeTruthy();
@@ -60,19 +59,14 @@ describe('AuthorizeParameters', () => {
 
   it('can be converted to object', async () => {
     // create parameters set
-    const options: AuthorizeParametersOptions = {
-      client_id: 'the client id',
-      redirect_uri: 'the redirect uri',
-      scope: 'the desired token scopes',
-    };
-    const params = new AuthorizeParameters(options);
+    const params = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
 
     // convert to object
     const paramsAsObj = await params.asObject();
 
     // known values
     expect(paramsAsObj).toMatchObject({
-      ...options,
+      ...AUTHORIZE_PARAMTERS_OPTIONS,
       code_challenge_method: 'S256',
       response_type: 'code',
     });
@@ -83,13 +77,7 @@ describe('AuthorizeParameters', () => {
   });
 
   it('can be converted to query string', async () => {
-    // create parameters set
-    const options: AuthorizeParametersOptions = {
-      client_id: 'the client id',
-      redirect_uri: 'the redirect uri',
-      scope: 'the desired token scopes',
-    };
-    const params = new AuthorizeParameters(options);
+    const params = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
 
     // convert to query string
     const paramsAsQueryString = await params.asQueryString();
