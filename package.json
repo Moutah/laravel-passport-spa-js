@@ -1,5 +1,5 @@
 {
-  "name": "laravel-passport-pkce-js-client",
+  "name": "laravel-passport-spa-js",
   "version": "0.0.1",
   "description": "A library to use Laravel's Passport Authorization flow (PKCE) from a Javascript web app context.",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Moutah/laravel-passport-pkce-js-client.git"
+    "url": "git+https://github.com/Moutah/laravel-passport-spa-js.git"
   },
   "keywords": [
     "laravel",
@@ -29,9 +29,9 @@
   "author": "moutah",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Moutah/laravel-passport-pkce-js-client/issues"
+    "url": "https://github.com/Moutah/laravel-passport-spa-js/issues"
   },
-  "homepage": "https://github.com/Moutah/laravel-passport-pkce-js-client#readme",
+  "homepage": "https://github.com/Moutah/laravel-passport-spa-js#readme",
   "dependencies": {
     "browser-tabs-lock": "^1.2.8",
     "fast-text-encoding": "^1.0.1",
