@@ -69,7 +69,13 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * @param {?string} scope
    */
   public async loginWithRedirect(scope?: string): Promise<void> {
-    const url = await this.buildAuthorizeUrl(scope);
+    const authorizeParameters = this.getAuthorizeParameters(scope);
+    const url = await this.buildAuthorizeUrl(authorizeParameters);
+
+    // store authorize paramter's code verifier
+    authorizeParameters.storeCodeVerifier();
+
+    // send the user to the authentication url
     window.location.assign(url);
   }
 
@@ -78,15 +84,14 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * await lpClient.buildAuthorizeUrl(scope);
    * ```
    *
-   * Creates AuthorizeParameters for this client and builds an `/oauth/authorize` URL. If provided,
-   * the given scope value will override the client's default scope. The resulting URL enforeces
-   * the use of https protocol.
+   * Build the authorization request URL for this client and given AuthorizeParameters. The
+   * resulting URL enforces the use of HTTPS protocol.
    *
-   * @param {?string} scope
+   * @param {AuthorizeParameters} authorizeParameters
    */
-  public async buildAuthorizeUrl(scope?: string): Promise<string> {
-    const params = this.getAuthorizeParameters(scope);
-    const queryString = await params.asQueryString();
+  public async buildAuthorizeUrl(authorizeParameters: AuthorizeParameters): Promise<string> {
+    // build query string
+    const queryString = await authorizeParameters.asQueryString();
 
     // prepare url and protocol
     const domain = this.domain.replace(/http(s*)\:\/\//, '');

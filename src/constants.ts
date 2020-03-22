@@ -6,6 +6,8 @@ export const DEFAULT_OAUTH_PREFIX = 'oauth';
 
 export const DEFAULT_SCOPE = '*';
 
+export const STORAGE_PREFIX = 'lp.';
+
 // /**
 //  * @ignore
 //  */

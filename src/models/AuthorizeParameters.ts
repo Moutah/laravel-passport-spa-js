@@ -2,6 +2,7 @@ import { AuthorizeParametersOptions } from '../interfaces/AuthorizeParametersOpt
 import { encodeState, bufferToBase64UrlEncoded } from '../utils/base64';
 import { createRandomString, sha256 } from '../utils/crypto';
 import { createQueryParams } from '../utils/queryString';
+import { STORAGE_PREFIX } from '../constants';
 
 export class AuthorizeParameters implements AuthorizeParametersOptions {
   public client_id: string;
@@ -57,5 +58,12 @@ export class AuthorizeParameters implements AuthorizeParametersOptions {
   public async getCodeChallenge(): Promise<string> {
     const code_challengeBuffer = await sha256(this.code_verifier);
     return bufferToBase64UrlEncoded(code_challengeBuffer);
+  }
+
+  /**
+   * Store the code verifier in the client's storage.
+   */
+  public storeCodeVerifier(): void {
+    window.localStorage.setItem(STORAGE_PREFIX + this.state, this.code_verifier);
   }
 }

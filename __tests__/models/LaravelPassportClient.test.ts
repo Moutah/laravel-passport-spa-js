@@ -11,6 +11,7 @@ import {
   DEFAULT_LEEWAY,
   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
 } from '../../src/constants';
+import { AuthorizeParameters } from '../../src/models/AuthorizeParameters';
 
 // define global context
 declare const global: any;
@@ -119,6 +120,7 @@ describe('LaravelPassportClient', () => {
     const params = client.getAuthorizeParameters();
 
     // content matches
+    expect(params).toBeInstanceOf(AuthorizeParameters);
     expect(params).toMatchObject({
       client_id: client.client_id,
       redirect_uri: client.redirect_uri,
@@ -138,7 +140,8 @@ describe('LaravelPassportClient', () => {
     const { client } = await setup();
 
     // build url
-    const url = await client.buildAuthorizeUrl();
+    const params = (client as LaravelPassportClient).getAuthorizeParameters();
+    const url = await (client as LaravelPassportClient).buildAuthorizeUrl(params);
 
     expect(url).toBe(
       `https://${TEST_DOMAIN_URL}/${DEFAULT_OAUTH_PREFIX}/authorize?${TEST_QUERY_PARAMS}`,
@@ -156,7 +159,8 @@ describe('LaravelPassportClient', () => {
     });
 
     // build url
-    const url = await client.buildAuthorizeUrl();
+    const params = client.getAuthorizeParameters();
+    const url = await client.buildAuthorizeUrl(params);
 
     // consecutive / are merged
     expect(url).toBe(`https://${TEST_DOMAIN_URL}/authorize?${TEST_QUERY_PARAMS}`);

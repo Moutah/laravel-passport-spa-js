@@ -12,7 +12,7 @@ global.TextEncoder = TextEncoder;
 const LARAVEL_PASSPORT_CLIENT_OPTIONS = {
   client_id: 'the client id',
   redirect_uri: 'the redirect uri',
-  domainUrl: 'https://www.url.com',
+  domain: 'https://www.url.com',
 };
 
 const setup = async (): Promise<any> => {

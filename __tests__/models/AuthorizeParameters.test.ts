@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import 'fast-text-encoding';
 import { AuthorizeParameters } from '../../src/models/AuthorizeParameters';
 import { AuthorizeParametersOptions } from '../../src/interfaces/AuthorizeParametersOptions';
+import { STORAGE_PREFIX } from '../../src/constants';
 
 // define global context
 declare const global: any;
@@ -12,14 +14,20 @@ const AUTHORIZE_PARAMTERS_OPTIONS: AuthorizeParametersOptions = {
   scope: 'the desired token scopes',
 };
 
+const setup = async (): Promise<AuthorizeParameters> => {
+  // create parameters
+  const authorizeParameters = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
+
+  return authorizeParameters;
+};
+
 describe('AuthorizeParameters', () => {
   let crypto: any;
   let randomValue = 0;
 
   beforeEach(() => {
-    crypto = global.crypto;
-
     // set crypto module mock
+    crypto = global.crypto;
     global.crypto = {
       getRandomValues: (a: Uint8Array): Array<number> => Array(a.length).fill(randomValue),
       subtle: {
@@ -32,9 +40,8 @@ describe('AuthorizeParameters', () => {
     global.crypto = crypto;
   });
 
-  it('generates state and code_verifier', () => {
-    // create parameters set
-    const paramsA = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
+  it('generates state and code_verifier', async () => {
+    const authorizeParameters = await setup();
 
     // change crypto module mock
     randomValue = 2;
@@ -43,26 +50,25 @@ describe('AuthorizeParameters', () => {
     const paramsB = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
 
     // state is set
-    expect(paramsA.state).toBeTruthy();
+    expect(authorizeParameters.state).toBeTruthy();
     expect(paramsB.state).toBeTruthy();
 
     // state is different for each client
-    expect(paramsA.state).not.toBe(paramsB.state);
+    expect(authorizeParameters.state).not.toBe(paramsB.state);
 
     // code_verifier is set
-    expect(paramsA.code_verifier).toBeTruthy();
+    expect(authorizeParameters.code_verifier).toBeTruthy();
     expect(paramsB.code_verifier).toBeTruthy();
 
     // code_verifier is different for each client
-    expect(paramsA.code_verifier).not.toBe(paramsB.code_verifier);
+    expect(authorizeParameters.code_verifier).not.toBe(paramsB.code_verifier);
   });
 
   it('can be converted to object', async () => {
-    // create parameters set
-    const params = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
+    const authorizeParameters = await setup();
 
     // convert to object
-    const paramsAsObj = await params.asObject();
+    const paramsAsObj = await authorizeParameters.asObject();
 
     // known values
     expect(paramsAsObj).toMatchObject({
@@ -77,10 +83,10 @@ describe('AuthorizeParameters', () => {
   });
 
   it('can be converted to query string', async () => {
-    const params = new AuthorizeParameters(AUTHORIZE_PARAMTERS_OPTIONS);
+    const authorizeParameters = await setup();
 
     // convert to query string
-    const paramsAsQueryString = await params.asQueryString();
+    const paramsAsQueryString = await authorizeParameters.asQueryString();
 
     expect(paramsAsQueryString).toBeTruthy();
 
@@ -94,5 +100,17 @@ describe('AuthorizeParameters', () => {
       'code_challenge',
       'code_challenge_method',
     ].forEach((key: string): void => expect(paramsAsQueryString.includes(key)).toBe(true));
+  });
+
+  it('can store code verifier', async () => {
+    const authorizeParameters = await setup();
+
+    authorizeParameters.storeCodeVerifier();
+
+    // stored in localStorage
+    expect(localStorage.setItem).toHaveBeenLastCalledWith(
+      STORAGE_PREFIX + authorizeParameters.state,
+      authorizeParameters.code_verifier,
+    );
   });
 });
