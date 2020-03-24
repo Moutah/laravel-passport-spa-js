@@ -1,5 +1,6 @@
 /**
  * Parse the given query string and returns it as a key-value dictionnary.
+ * @param queryString
  */
 export const parseQueryResult = (queryString: string): any => {
   if (queryString.indexOf('#') > -1) {
@@ -14,16 +15,13 @@ export const parseQueryResult = (queryString: string): any => {
     parsedQuery[key] = decodeURIComponent(val);
   });
 
-  return {
-    ...parsedQuery,
-    expires_in: parseInt(parsedQuery.expires_in),
-  };
+  return parsedQuery;
 };
 
 /**
- * Concatenates the given key-value dictionnary into a query string.
- *
- * Note that is not prefiexed with a question mark!
+ * Concatenates the given key-value dictionnary into a query string. Note that is not prefiexed
+ * with a question mark!
+ * @param params
  */
 export const createQueryParams = (params: any): string => {
   return Object.keys(params)

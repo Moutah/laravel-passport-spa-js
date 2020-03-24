@@ -47,6 +47,7 @@ export const createRandomString = (): string => {
 
 /**
  * Hash the given string using SHA256 algorithm.
+ * @param str
  */
 export const sha256 = async (str: string): Promise<ArrayBuffer> => {
   const digestOp = getCryptoSubtle().digest({ name: 'SHA-256' }, new TextEncoder().encode(str));

@@ -11,16 +11,19 @@ const decodeB64 = (input: string): string =>
 
 /**
  * Encode given string to base64.
+ * @param str
  */
 export const encodeState = (str: string): string => btoa(str);
 
 /**
  * Decode given base64 string.
+ * @param str
  */
 export const decodeState = (str: string): string => atob(str);
 
 /**
  * Encode given string to url compliant base64.
+ * @param url
  */
 export const urlEncodeB64 = (url: string): string => {
   const b64Chars: any = { '+': '-', '/': '_', '=': '' };
@@ -29,12 +32,14 @@ export const urlEncodeB64 = (url: string): string => {
 
 /**
  * Decode given base64 url part.
+ * @param urlPart
  */
 export const urlDecodeB64 = (urlPart: string): string =>
   decodeB64(urlPart.replace(/_/g, '/').replace(/-/g, '+'));
 
 /**
  * Encode given array buffer to base64.
+ * @param arrBuffer
  */
 export const bufferToBase64UrlEncoded = (arrBuffer: ArrayBuffer): string => {
   const ie11SafeInput = new Uint8Array(arrBuffer);

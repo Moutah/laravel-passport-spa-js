@@ -1,5 +1,6 @@
 /**
  * Returns an array with unique values of the given array.
+ * @param arr
  */
 export const dedupe = (arr: any[]): any[] => arr.filter((x, i) => arr.indexOf(x) === i);
 

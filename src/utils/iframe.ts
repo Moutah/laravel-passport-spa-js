@@ -1,25 +1,5 @@
-// publishes utils modules
-export { dedupe, implodeMultiple } from './utils/general';
-export { parseQueryResult, createQueryParams } from './utils/queryString';
-export {
-  encodeState,
-  decodeState,
-  urlEncodeB64,
-  urlDecodeB64,
-  bufferToBase64UrlEncoded,
-} from './utils/base64';
-export {
-  getCrypto,
-  getCryptoSubtle,
-  validateCrypto,
-  createRandomString,
-  sha256,
-} from './utils/crypto';
-
 // unused yet
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-// import fetch from 'unfetch';
 
 // import {
 //   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
@@ -64,29 +44,3 @@ export {
 //     iframe.setAttribute('src', authorizeUrl);
 //   });
 // };
-
-// const getJSON = async (url: string, options: any): Promise<any> => {
-//   const response = await fetch(url, options);
-//   const { error, error_description, ...success } = await response.json();
-//   if (!response.ok) {
-//     const errorMessage = error_description || `HTTP error. Unable to fetch ${url}`;
-//     const e = new Error(errorMessage) as any;
-//     e.error = error || 'request_error';
-//     e.error_description = errorMessage;
-//     throw e;
-//   }
-//   return success;
-// };
-
-// export const oauthToken = async ({ baseUrl, ...options }: OAuthTokenOptions): Promise<any> =>
-//   await getJSON(`${baseUrl}/oauth/token`, {
-//     method: 'POST',
-//     body: JSON.stringify({
-//       grant_type: 'authorization_code',
-//       redirect_uri: window.location.origin,
-//       ...options,
-//     }),
-//     headers: {
-//       'Content-type': 'application/json',
-//     },
-//   });

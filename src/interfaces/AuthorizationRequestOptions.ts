@@ -1,4 +1,4 @@
-export interface AuthorizeParametersOptions {
+export interface AuthorizationRequestOptions {
   /**
    * The Client ID.
    */
