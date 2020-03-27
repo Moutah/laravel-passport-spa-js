@@ -24,7 +24,7 @@ export class JWT {
 
     // invalid format
     if (parts.length !== 3 || !header || !payload || !signature) {
-      throw new Error('ID token could not be decoded');
+      throw new Error('Token could not be decoded');
     }
 
     // parse payload
@@ -33,9 +33,9 @@ export class JWT {
     // set attributes
     this.client_id = parseInt(payloadJSON.aud);
     this.token_id = payloadJSON.jti;
-    this.issued_at = new Date(payloadJSON.iat);
-    this.expiration = new Date(payloadJSON.exp - DEFAULT_LEEWAY);
-    this.not_before = new Date(payloadJSON.nbf);
+    this.issued_at = new Date(payloadJSON.iat * 1000);
+    this.expiration = new Date((payloadJSON.exp - DEFAULT_LEEWAY) * 1000);
+    this.not_before = new Date(payloadJSON.nbf * 1000);
     this.user_id = parseInt(payloadJSON.sub);
     this.scopes = payloadJSON.scopes;
   }

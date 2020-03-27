@@ -50,7 +50,6 @@ export class AuthorizationRequest implements AuthorizationRequestOptions {
    */
   async asQueryString(): Promise<string> {
     const params = await this.parameters();
-
     return createQueryParams(params);
   }
 

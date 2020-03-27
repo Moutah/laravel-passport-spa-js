@@ -102,11 +102,11 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * @param {?string} scope
    */
   async loginWithRedirect(scope?: string): Promise<void> {
-    const authorizeParameters = this.getAuthorizeParameters(scope);
-    const url = await this.buildAuthorizeUrl(authorizeParameters);
+    const authorizationRequest = this.buildAuthorizationRequest(scope);
+    const url = await this.buildAuthorizeUrl(authorizationRequest);
 
     // store authorize parameter's code verifier
-    authorizeParameters.storeState();
+    authorizationRequest.storeState();
 
     // send the user to the authentication url
     window.location.assign(url);
@@ -132,17 +132,11 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
     // parse query
     const { code, state } = parseQueryResult(queryString);
 
-    try {
-      // create authorization
-      const authorization = new Authorization({ code, state });
+    // create authorization
+    const authorization = new Authorization({ code, state });
 
-      // attempt to sign in with authorization
-      return await this.signInWithAuthorization(authorization);
-    } catch (e) {
-      console.error(e);
-    }
-
-    return false;
+    // attempt to sign in with authorization
+    return await this.signInWithAuthorization(authorization);
   }
 
   // *** Internal
@@ -166,7 +160,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * the client's default scope.
    * @param scope
    */
-  private getAuthorizeParameters(scope?: string): AuthorizationRequest {
+  private buildAuthorizationRequest(scope?: string): AuthorizationRequest {
     return new AuthorizationRequest({
       client_id: this.client_id,
       redirect_uri: this.redirect_uri,
@@ -178,6 +172,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * Exchange the given Authorization for a token. Returns `true` if sign in was successful,
    * `false` otherwise.
    * @param authorization
+   * @throws if the recieved token's scope does not match the scope from authorization
    */
   private async signInWithAuthorization(authorization: Authorization): Promise<boolean> {
     try {
@@ -189,7 +184,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
 
       // validate scope
       if (authorization.scope !== token.scopesAsString()) {
-        throw new Error("Authorized state does not match the recieved token's state");
+        throw new Error("Authorized scope does not match the recieved token's scope");
       }
 
       // store token
@@ -197,8 +192,6 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
 
       return true;
     } catch (e) {
-      console.error(e);
-
       // remove token
       this.signOut();
     }
