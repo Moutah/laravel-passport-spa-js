@@ -173,6 +173,18 @@ describe('LaravelPassportClient', () => {
     expect(client.isTokenValid()).toBe(false);
   });
 
+  it('can give signed user id', async () => {
+    const { client } = setup();
+
+    // no token
+    expect(client.getSignedInUserId()).toBe(null);
+
+    // sign in
+    await client.signIn();
+
+    expect(client.getSignedInUserId()).toBe(parseInt(TEST_JWT_PAYLOAD.sub));
+  });
+
   it('can sign out', async () => {
     const { client } = setup();
 

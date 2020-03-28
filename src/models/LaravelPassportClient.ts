@@ -105,6 +105,17 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
 
   /**
    * ```js
+   * lpClient.getSignedInUserId();
+   * ```
+   *
+   * Get this client token's user id.
+   */
+  getSignedInUserId(): number | null {
+    return this.isTokenValid() ? (this._token as JWT).user_id : null;
+  }
+
+  /**
+   * ```js
    * await lpClient.signIn();
    * ```
    *
