@@ -11,6 +11,7 @@ import {
   DEFAULT_SCOPE,
   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
   STORAGE_PREFIX,
+  DEFAULT_LEEWAY,
 } from '../../src/constants';
 
 // define global context
@@ -126,6 +127,22 @@ describe('LaravelPassportClient', () => {
     expect(client.oauthPrefix).toBe(test_oauthPrefix);
     expect(client.scope).toBe(TEST_SCOPES);
     expect(client.authorizeTimeoutInSeconds).toBe(test_authorizeTimeoutInSeconds);
+  });
+
+  it('can give token expiration', async () => {
+    const { client } = setup();
+
+    // no token
+    expect(client.getTokenExpiration()).toBe(null);
+
+    // sign in
+    await client.signIn();
+
+    const tokenExpiration = client.getTokenExpiration();
+    expect(tokenExpiration).toBeInstanceOf(Date);
+    expect((tokenExpiration as Date).getTime()).toBe(
+      1000 * (TEST_JWT_PAYLOAD.exp - DEFAULT_LEEWAY),
+    );
   });
 
   it('can assess token validity', async () => {

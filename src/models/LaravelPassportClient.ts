@@ -83,6 +83,17 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
 
   /**
    * ```js
+   * lpClient.getTokenExpiration();
+   * ```
+   *
+   * Get this client token's expiration date.
+   */
+  getTokenExpiration(): Date | null {
+    return this._token ? this._token.expiration : null;
+  }
+
+  /**
+   * ```js
    * lpClient.isTokenValid();
    * ```
    *
