@@ -11,6 +11,7 @@ import { Authorization } from './Authorization';
 import { getJSON, cleanUrl } from '../utils/xhr';
 import { JWT } from './JWT';
 import { AuthorizationSignature } from '../interfaces/AuthorizationSignature';
+import { runIframe } from '../utils/iframe';
 
 /*
 TODO
@@ -70,6 +71,10 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
   }
 
   /**
+   * ```js
+   * lpClient.getToken();
+   * ```
+   *
    * Get the token this client has in cache.
    */
   getToken(): string | null {
@@ -77,23 +82,37 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
   }
 
   /**
-   * Cache the token for this client.
-   * @param token
+   * ```js
+   * lpClient.isTokenValid();
+   * ```
+   *
+   * Returns `true` if the client has a token which is not expired, `false` otherwise.
    */
-  signIn(token: JWT): void {
-    this._token = token;
-  }
-
-  /**
-   * Remove the cached token.
-   */
-  signOut(): void {
-    this._token = undefined;
+  isTokenValid(): boolean {
+    return !!this._token && !this._token.isExpired();
   }
 
   /**
    * ```js
-   * await lpClient.loginWithRedirect(scope);
+   * await lpClient.signIn();
+   * ```
+   *
+   * Sign the client in. Starts with the iframe flow and fallsback to redirect flow if needed.
+   * @param {?string} scope
+   */
+  async signIn(scope?: string): Promise<boolean> {
+    const isSignedInSilently = await this.executeSignIn('iframe', scope);
+
+    if (!isSignedInSilently) {
+      await this.signInWithRedirect(scope);
+    }
+
+    return isSignedInSilently;
+  }
+
+  /**
+   * ```js
+   * await lpClient.signInWithRedirect(scope);
    * ```
    *
    * Redirect to the authorize URL (`'/oauth/authorize'` by default) with appropriate
@@ -101,20 +120,13 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * default scope.
    * @param {?string} scope
    */
-  async loginWithRedirect(scope?: string): Promise<void> {
-    const authorizationRequest = this.buildAuthorizationRequest(scope);
-    const url = await this.buildAuthorizeUrl(authorizationRequest);
-
-    // store authorize parameter's code verifier
-    authorizationRequest.storeState();
-
-    // send the user to the authentication url
-    window.location.assign(url);
+  async signInWithRedirect(scope?: string): Promise<void> {
+    await this.executeSignIn('redirect', scope);
   }
 
   /**
    * ```js
-   * await lpClient.hanhandleRedirectCallback();
+   * await lpClient.handleRedirectCallback();
    * ```
    *
    * Extract the code returned in the query string, build the Authorization Signature and calls
@@ -122,24 +134,36 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * otherwise.
    */
   async handleRedirectCallback(): Promise<boolean> {
+    // abort if inside iframe
+    if (window.self !== window.top) return false;
+
+    // acquire querystring
     const queryString = window.location.search.substr(1);
 
-    // nothing returned
-    if (queryString.length === 0) {
-      throw new Error('No query response parameters found.');
-    }
-
-    // parse query
-    const { code, state } = parseQueryResult(queryString);
-
-    // create authorization
-    const authorization = new Authorization({ code, state });
-
     // attempt to sign in with authorization
-    return await this.signInWithAuthorization(authorization);
+    return await this.convertToToken(queryString);
+  }
+
+  /**
+   * ```js
+   * lpClient.signOut();
+   * ```
+   *
+   * Remove the cached token.
+   */
+  signOut(): void {
+    this._token = undefined;
   }
 
   // *** Internal
+
+  /**
+   * Cache the token for this client.
+   * @param token
+   */
+  private storeToken(token: JWT): void {
+    this._token = token;
+  }
 
   /**
    * Build the authorization request URL for this client and given AuthorizeParameters.
@@ -169,6 +193,64 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
   }
 
   /**
+   * Execute the sign in process with given method for given scope. Resolves on `true` if the sign
+   * in has been successful, `false` otherwise.
+   * @param method
+   * @param scope
+   */
+  private async executeSignIn(method: string, scope?: string): Promise<boolean> {
+    // prepare authorization request
+    const authorizationRequest = this.buildAuthorizationRequest(scope);
+    authorizationRequest.storeState();
+
+    // make url
+    const url = await this.buildAuthorizeUrl(authorizationRequest);
+
+    switch (method) {
+      case 'redirect':
+        window.location.assign(url);
+        return false;
+
+      case 'iframe':
+      default:
+        try {
+          const queryString = await runIframe(url);
+          return await this.convertToToken(queryString);
+        } catch {
+          return false;
+        }
+    }
+  }
+
+  /**
+   * Use the given query string to make an Authorization and sign in with it.
+   * @param queryString
+   * @throws If given query string is empty
+   */
+  private async convertToToken(queryString: string): Promise<boolean> {
+    const authorization = this.makeAuthorization(queryString);
+    return await this.signInWithAuthorization(authorization);
+  }
+
+  /**
+   * Parse the given query string and returns an Authorization with the parsed parameters.
+   * @param queryString
+   * @throws If given query string is empty
+   */
+  private makeAuthorization(queryString: string): Authorization {
+    // nothing returned
+    if (queryString.length === 0) {
+      throw new Error('No query response parameters found.');
+    }
+
+    // parse query
+    const { code, state } = parseQueryResult(queryString);
+
+    // create authorization
+    return new Authorization({ code, state });
+  }
+
+  /**
    * Exchange the given Authorization for a token. Returns `true` if sign in was successful,
    * `false` otherwise.
    * @param authorization
@@ -188,7 +270,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
       }
 
       // store token
-      this.signIn(token);
+      this.storeToken(token);
 
       return true;
     } catch (e) {

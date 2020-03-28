@@ -1,46 +1,39 @@
-// unused yet
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+import { DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS } from './../constants';
 
-// import {
-//   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
-//   CLEANUP_IFRAME_TIMEOUT_IN_SECONDS,
-// } from './constants';
-// import AuthenticationResult from './models/AuthenticationResult';
+/**
+ * Inject an iframe to the DOM with the given url as `src` attribute. When the `'DOMContentLoaded'`
+ * event is fired on the iframe, resolves on its `location.search` value and remove the iframe from
+ * the DOM. The function rejects if the event is not captured before the given `timeoutInSeconds`.
+ * @param url
+ * @param timeoutInSeconds
+ */
+export const runIframe = (
+  url: string,
+  timeoutInSeconds: number = DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
+): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    // make iframe element
+    const iframe = window.document.createElement('iframe');
+    iframe.setAttribute('width', '0');
+    iframe.setAttribute('height', '0');
+    iframe.style.display = 'none';
 
-// const TIMEOUT_ERROR = { error: 'timeout', errorDescription: 'Timeout' };
+    // timeout fallback
+    setTimeout(() => {
+      window.document.body.removeChild(iframe);
+      reject('Timeout');
+    }, timeoutInSeconds * 1000);
 
-// export const runIframe = (
-//   authorizeUrl: string,
-//   eventOrigin: string,
-//   timeoutInSeconds: number = DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
-// ): Promise<AuthenticationResult> => {
-//   return new Promise<AuthenticationResult>((res, rej) => {
-//     const iframe = window.document.createElement('iframe');
-//     iframe.setAttribute('width', '0');
-//     iframe.setAttribute('height', '0');
-//     iframe.style.display = 'none';
+    // handle iframe loaded
+    const iframeLoadedHandler = (): void => {
+      const search = iframe.contentWindow ? iframe.contentWindow.location.search : '';
+      window.document.body.removeChild(iframe);
+      resolve(search.substr(1));
+    };
 
-//     const timeoutSetTimeoutId = setTimeout(() => {
-//       rej(TIMEOUT_ERROR);
-//       window.document.body.removeChild(iframe);
-//     }, timeoutInSeconds * 1000);
-
-//     const iframeEventHandler = function(e: MessageEvent): void {
-//       if (e.origin != eventOrigin) return;
-//       if (!e.data || e.data.type !== 'authorization_response') return;
-//       (e.source as any).close();
-//       e.data.response.error ? rej(e.data.response) : res(e.data.response);
-//       clearTimeout(timeoutSetTimeoutId);
-//       window.removeEventListener('message', iframeEventHandler, false);
-//       // Delay the removal of the iframe to prevent hanging loading status
-//       // in Chrome: https://github.com/auth0/auth0-spa-js/issues/240
-//       setTimeout(
-//         () => window.document.body.removeChild(iframe),
-//         CLEANUP_IFRAME_TIMEOUT_IN_SECONDS * 1000,
-//       );
-//     };
-//     window.addEventListener('message', iframeEventHandler, false);
-//     window.document.body.appendChild(iframe);
-//     iframe.setAttribute('src', authorizeUrl);
-//   });
-// };
+    // add iframe to DOM
+    window.document.body.appendChild(iframe);
+    (iframe.contentWindow as Window).addEventListener('DOMContentLoaded', iframeLoadedHandler);
+    iframe.setAttribute('src', url);
+  });
+};

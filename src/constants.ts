@@ -1,7 +1,7 @@
 /**
  * The amount of seconds to wait on an authorization request before bailing.
  */
-export const DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS = 60;
+export const DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS = 20;
 
 /**
  * Duration in seconds to substract from JWT expiration date to avoid expiration occuring too

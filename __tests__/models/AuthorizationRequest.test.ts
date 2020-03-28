@@ -8,7 +8,7 @@ import { STORAGE_PREFIX } from '../../src/constants';
 declare const global: any;
 global.TextEncoder = TextEncoder;
 
-const AUTHORIZE_PARAMTERS_OPTIONS: AuthorizationRequestOptions = {
+const AUTHORIZE_PARAMETERS_OPTIONS: AuthorizationRequestOptions = {
   client_id: 'the client id',
   redirect_uri: 'the redirect uri',
   scope: 'the desired token scopes',
@@ -16,7 +16,7 @@ const AUTHORIZE_PARAMTERS_OPTIONS: AuthorizationRequestOptions = {
 
 const setup = async (): Promise<AuthorizationRequest> => {
   // create parameters
-  const authorizationRequest = new AuthorizationRequest(AUTHORIZE_PARAMTERS_OPTIONS);
+  const authorizationRequest = new AuthorizationRequest(AUTHORIZE_PARAMETERS_OPTIONS);
 
   return authorizationRequest;
 };
@@ -47,7 +47,7 @@ describe('AuthorizationRequest', () => {
     randomValue = 2;
 
     // create other parameter set with same seed
-    const paramsB = new AuthorizationRequest(AUTHORIZE_PARAMTERS_OPTIONS);
+    const paramsB = new AuthorizationRequest(AUTHORIZE_PARAMETERS_OPTIONS);
 
     // state is set
     expect(authorizationRequest.state).toBeTruthy();
@@ -72,7 +72,7 @@ describe('AuthorizationRequest', () => {
 
     // known values
     expect(paramsAsObj).toMatchObject({
-      ...AUTHORIZE_PARAMTERS_OPTIONS,
+      ...AUTHORIZE_PARAMETERS_OPTIONS,
       code_challenge_method: 'S256',
       response_type: 'code',
     });
