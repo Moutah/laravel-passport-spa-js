@@ -129,6 +129,18 @@ describe('LaravelPassportClient', () => {
     expect(client.authorizeTimeoutInSeconds).toBe(test_authorizeTimeoutInSeconds);
   });
 
+  it('can give token scopes', async () => {
+    const { client } = setup();
+
+    // no token
+    expect(client.getTokenScopes()).toBe(null);
+
+    // sign in
+    await client.signIn();
+
+    expect(client.getTokenScopes()).toStrictEqual(TEST_JWT_PAYLOAD.scopes);
+  });
+
   it('can give token expiration', async () => {
     const { client } = setup();
 

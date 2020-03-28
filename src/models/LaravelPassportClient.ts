@@ -13,14 +13,6 @@ import { JWT } from './JWT';
 import { AuthorizationSignature } from '../interfaces/AuthorizationSignature';
 import { runIframe } from '../utils/iframe';
 
-/*
-TODO
-isSignedIn
-getSignedInUserId
-getTokenExpiration
-getTokenScopes
-*/
-
 export class LaravelPassportClient implements LaravelPassportClientOptions {
   domain: string;
   client_id: string;
@@ -79,6 +71,17 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    */
   getToken(): string | null {
     return this._token ? this._token.raw : null;
+  }
+
+  /**
+   * ```js
+   * lpClient.getTokenScopes();
+   * ```
+   *
+   * Get this client token's scope(s).
+   */
+  getTokenScopes(): string[] | null {
+    return this._token ? this._token.scopes : null;
   }
 
   /**
