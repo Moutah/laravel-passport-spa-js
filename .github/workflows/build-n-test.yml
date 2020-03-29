@@ -1,9 +1,5 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
     branches: [master, develop]
@@ -12,28 +8,24 @@ on:
 
 jobs:
   build:
-    name: Build distribution code
+    name: Build and test distribution code
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout repository
+        uses: actions/checkout@master
 
-      - name: Run NPM install
-        run: npm install
+      - name: Run NPM install, build and test
+        run: |
+          npm install
+          npm run build
+          npm run test:ci
 
-      - name: Build the code
-        run: npm run build
-
-      - name: Run the tests
-        run: npm run test:ci
-
-  sonarCloudTrigger:
-    needs: build
-    name: SonarCloud Trigger
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@master
+      - name: Publish artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: laravel-passport-spa-js
+          path: dist
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
