@@ -14,12 +14,15 @@ const setup = (): any => {
     setAttribute: jest.fn(),
     contentWindow: {
       addEventListener: jest.fn((eventName: string, callback: () => any): void => {
-        iframeEvents[eventName] = callback;
+        iframeEvents['contentWindow.' + eventName] = callback;
       }),
       location: {
         search: `?${TEST_QUERY_STRING}`,
       },
     },
+    addEventListener: jest.fn((eventName: string, callback: () => any): void => {
+      iframeEvents['iframe.' + eventName] = callback;
+    }),
     manuallyTriggerEvent: (eventName: string): any => {
       if (iframeEvents[eventName]) {
         iframeEvents[eventName]();
@@ -27,14 +30,6 @@ const setup = (): any => {
     },
     style: { display: '' },
   };
-
-  // mock window event listener
-  // window.addEventListener = jest.fn((message, callback) => {
-  //   expect(message).toBe('message');
-  //   callback(customMessage);
-  // }) as any;
-
-  // window.removeEventListener = jest.fn();
 
   // mock createElement expecting iframe element
   window.document.createElement = jest.fn(type => {
@@ -59,7 +54,7 @@ describe('utils.iframe', () => {
 
       // manually tirgger event on next loop
       Promise.resolve().then(() => {
-        iframe.manuallyTriggerEvent('DOMContentLoaded');
+        iframe.manuallyTriggerEvent('contentWindow.DOMContentLoaded');
       });
       const iframeResult = await runIframe(url);
 
@@ -87,7 +82,7 @@ describe('utils.iframe', () => {
       // manually tirgger event on next loop
       Promise.resolve().then(() => {
         iframe.contentWindow = null;
-        iframe.manuallyTriggerEvent('DOMContentLoaded');
+        iframe.manuallyTriggerEvent('contentWindow.DOMContentLoaded');
       });
       const iframeResult = await runIframe(url);
 

@@ -19,14 +19,22 @@ export const runIframe = (
     iframe.style.display = 'none';
 
     // timeout fallback
-    setTimeout(() => {
+    const cleanupTimeout = setTimeout(() => {
       window.document.body.removeChild(iframe);
       reject('Timeout');
     }, timeoutInSeconds * 1000);
 
     // handle iframe loaded
     const iframeLoadedHandler = (): void => {
-      const search = iframe.contentWindow ? iframe.contentWindow.location.search : '';
+      let search = '';
+      try {
+        search = iframe.contentWindow ? iframe.contentWindow.location.search : '';
+      } catch {
+        // iframe cannot be accessed
+      }
+
+      // remove iframe and resolve
+      clearTimeout(cleanupTimeout);
       window.document.body.removeChild(iframe);
       resolve(search.substr(1));
     };
@@ -34,6 +42,7 @@ export const runIframe = (
     // add iframe to DOM
     window.document.body.appendChild(iframe);
     (iframe.contentWindow as Window).addEventListener('DOMContentLoaded', iframeLoadedHandler);
+    iframe.addEventListener('load', iframeLoadedHandler);
     iframe.setAttribute('src', url);
   });
 };
