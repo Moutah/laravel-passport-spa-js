@@ -1,0 +1,7 @@
+organization=moutah
+projectKey=Moutah_laravel-passport-spa-js
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.6188
+dashboardUrl=https://sonarcloud.io/dashboard?id=Moutah_laravel-passport-spa-js
+ceTaskId=AXEnF-q7hBOLtdkqL6Lb
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AXEnF-q7hBOLtdkqL6Lb
