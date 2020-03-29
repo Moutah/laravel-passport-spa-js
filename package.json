@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
-    "test:ci": "jest --ci",
+    "test:ci": "jest --ci --coverage",
     "prepublish": "tsc",
     "build": "tsc",
     "dev": "tsc --watch"
