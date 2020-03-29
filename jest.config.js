@@ -6,4 +6,8 @@ module.exports = {
   coverageReporters: ['lcov', 'text', 'text-summary'],
   preset: 'ts-jest',
   setupFiles: ['jest-localstorage-mock'],
+  reporters: [
+    'default',
+    ['jest-junit', { suiteName: 'jest tests', outputDirectory: './coverage' }],
+  ],
 };
