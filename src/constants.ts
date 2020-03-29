@@ -20,14 +20,11 @@ export const DEFAULT_OAUTH_PREFIX = 'oauth';
 export const DEFAULT_SCOPE = '*';
 
 /**
+ * If the client will automatically refresh its token.
+ */
+export const DEFAULT_AUTO_REFRESH = true;
+
+/**
  * The prefix to use for the entires in client's storage.
  */
 export const STORAGE_PREFIX = 'lpjs.';
-
-// /**
-//  */
-// export const CLEANUP_IFRAME_TIMEOUT_IN_SECONDS = 2;
-
-// /**
-//  */
-// export const DEFAULT_POPUP_CONFIG_OPTIONS: PopupConfigOptions = {};

@@ -2,6 +2,7 @@ import {
   DEFAULT_SCOPE,
   DEFAULT_OAUTH_PREFIX,
   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
+  DEFAULT_AUTO_REFRESH,
 } from '../constants';
 import { AuthorizationRequest } from './AuthorizationRequest';
 import { AuthorizationRequestOptions } from '../interfaces/AuthorizationRequestOptions';
@@ -43,6 +44,14 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
     this._authorizeTimeoutInSeconds = value;
   }
 
+  private _isAutoRefresh?: boolean;
+  get isAutoRefresh(): boolean {
+    return this._isAutoRefresh !== undefined ? this._isAutoRefresh : DEFAULT_AUTO_REFRESH;
+  }
+  set isAutoRefresh(value: boolean) {
+    this._isAutoRefresh = value;
+  }
+
   /**
    * Build Laravel Passport Client based on given options.
    * @param options
@@ -69,7 +78,13 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    *
    * Get the token this client has in cache.
    */
-  getToken(): string | null {
+  async getToken(): Promise<string | null> {
+    // refresh invalid token
+    if (this.isAutoRefresh && !this.isTokenValid()) {
+      const currentScope = this._token ? this._token.scopesAsString() : undefined;
+      await this.signIn(currentScope);
+    }
+
     return this._token ? this._token.raw : null;
   }
 

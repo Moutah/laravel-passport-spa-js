@@ -12,6 +12,7 @@ import {
   DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS,
   STORAGE_PREFIX,
   DEFAULT_LEEWAY,
+  DEFAULT_AUTO_REFRESH,
 } from '../../src/constants';
 
 // define global context
@@ -110,6 +111,7 @@ describe('LaravelPassportClient', () => {
     expect(client.oauthPrefix).toBe(DEFAULT_OAUTH_PREFIX);
     expect(client.scope).toBe(DEFAULT_SCOPE);
     expect(client.authorizeTimeoutInSeconds).toBe(DEFAULT_AUTHORIZE_TIMEOUT_IN_SECONDS);
+    expect(client.isAutoRefresh).toBe(DEFAULT_AUTO_REFRESH);
   });
 
   it('setters override defaults', async () => {
@@ -118,15 +120,18 @@ describe('LaravelPassportClient', () => {
     // custom values
     const test_oauthPrefix = 'awesome-prefix';
     const test_authorizeTimeoutInSeconds = 42;
+    const test_isAutoRefresh = false;
 
     // set values
     client.oauthPrefix = test_oauthPrefix;
     client.scope = TEST_SCOPES;
     client.authorizeTimeoutInSeconds = test_authorizeTimeoutInSeconds;
+    client.isAutoRefresh = test_isAutoRefresh;
 
     expect(client.oauthPrefix).toBe(test_oauthPrefix);
     expect(client.scope).toBe(TEST_SCOPES);
     expect(client.authorizeTimeoutInSeconds).toBe(test_authorizeTimeoutInSeconds);
+    expect(client.isAutoRefresh).toBe(test_isAutoRefresh);
   });
 
   it('can give token scopes', async () => {
@@ -197,27 +202,58 @@ describe('LaravelPassportClient', () => {
     expect(client.getSignedInUserId()).toBe(parseInt(TEST_JWT_PAYLOAD.sub));
   });
 
+  it('can auto refresh token', async () => {
+    expect.assertions(2);
+    const { client, base64 } = setup();
+    const signInSpy = jest.spyOn(client, 'signIn');
+    client.signInWithRedirect = jest.fn();
+
+    // no token in store
+    await client.getToken();
+    expect(signInSpy).toHaveBeenLastCalledWith(undefined);
+
+    // sign client in with an expired token
+    base64.urlDecodeB64.mockReturnValue(
+      JSON.stringify({
+        ...TEST_JWT_PAYLOAD,
+        exp: 0,
+      }),
+    );
+    localStorage.setItem(
+      STORAGE_PREFIX + TEST_STATE,
+      JSON.stringify({ v: TEST_CODE_VERIFIER, s: TEST_SCOPES }),
+    );
+    await client.signIn();
+
+    // get new token with same scope
+    await client.getToken();
+    expect(signInSpy).toHaveBeenLastCalledWith(TEST_JWT_PAYLOAD.scopes.join(' '));
+  });
+
   it('can sign out', async () => {
+    expect.assertions(3);
     const { client } = setup();
+    client.isAutoRefresh = false;
 
     // no token yet
-    expect(client.getToken()).toBeFalsy();
+    await expect(client.getToken()).resolves.toBeFalsy();
 
     // sign in
     await client.signIn();
-    expect(client.getToken()).toBeTruthy();
+    await expect(client.getToken()).resolves.toBeTruthy();
 
     // sign out
     client.signOut();
-    expect(client.getToken()).toBeFalsy();
+    await expect(client.getToken()).resolves.toBeFalsy();
   });
 
   describe('sign in with iframe', () => {
     it('can sign in with iframe', async () => {
+      expect.assertions(2);
       const { client } = setup();
 
       await expect(client.signIn()).resolves.toBe(true);
-      expect(client.getToken()).toBeTruthy();
+      await expect(client.getToken()).resolves.toBeTruthy();
     });
 
     it('signs in with redirect if iframe fails', async () => {
@@ -350,7 +386,7 @@ describe('LaravelPassportClient', () => {
       const { client } = setup();
 
       await expect(client.handleRedirectCallback()).resolves.toBe(true);
-      expect(client.getToken()).toBeTruthy();
+      await expect(client.getToken()).resolves.toBeTruthy();
     });
 
     it('aborts redirect callback handling if inside iframe', async () => {
