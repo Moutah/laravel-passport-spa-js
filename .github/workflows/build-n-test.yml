@@ -24,15 +24,18 @@ jobs:
       - name: Build the code
         run: npm run build
 
-      - name: Run the tests
-        run: npm run test
-
   sonarCloudTrigger:
     name: SonarCloud Trigger
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@master
+
+      - name: Run NPM install
+        run: npm install
+
+      - name: Run the tests
+        run: npm run test
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
