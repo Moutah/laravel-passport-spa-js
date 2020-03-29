@@ -1,0 +1,59 @@
+{
+  "name": "laravel-passport-spa-js",
+  "version": "0.0.1",
+  "description": "A library to use Laravel's Passport Authorization flow (PKCE) from a Javascript web app context.",
+  "main": "dist/index.js",
+  "types": "dist/typings/index.d.ts",
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --coverage --watch",
+    "test:ci": "jest --ci --coverage",
+    "prepublish": "tsc",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moutah/laravel-passport-spa-js.git"
+  },
+  "keywords": [
+    "laravel",
+    "passport",
+    "pkce",
+    "js",
+    "front",
+    "oauth",
+    "web",
+    "Authorization Code Grant Flow",
+    "SPA authentication"
+  ],
+  "author": "moutah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Moutah/laravel-passport-spa-js/issues"
+  },
+  "homepage": "https://github.com/Moutah/laravel-passport-spa-js#readme",
+  "dependencies": {
+    "browser-tabs-lock": "^1.2.8",
+    "fast-text-encoding": "^1.0.1",
+    "unfetch": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.2",
+    "@types/node-fetch": "^2.5.5",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.1.0",
+    "jest-junit": "^10.0.0",
+    "jest-localstorage-mock": "^2.4.0",
+    "node-fetch": "^2.6.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^25.2.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3"
+  }
+}
