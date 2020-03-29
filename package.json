@@ -48,17 +48,12 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
     "jest": "^25.1.0",
+    "jest-junit": "^10.0.0",
     "jest-localstorage-mock": "^2.4.0",
-    "jest-sonar-reporter": "^2.0.0",
     "node-fetch": "^2.6.0",
     "prettier": "^1.19.1",
     "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3"
-  },
-  "jestSonar": {
-    "reportPath": "coverage",
-    "reportFile": "test-reporter.xml",
-    "indent": 4
   }
 }
