@@ -1,12 +1,21 @@
 # laravel-passport-spa-js
 
-This package handles the token management from a [Laravel](https://github.com/laravel/laravel) back-end using [Passport](https://github.com/laravel/passport) authentification in a Single-Page Application using the OAuth [authorization flow (PKCE)](https://www.oauth.com/oauth2-servers/pkce/). It allows you to safely get tokens without storing them in the local storage or cookies.
-
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/Moutah/laravel-passport-spa-js)
 ![Build](https://github.com/Moutah/laravel-passport-spa-js/workflows/CI/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Moutah_laravel-passport-spa-js&metric=alert_status)](https://sonarcloud.io/dashboard?id=Moutah_laravel-passport-spa-js)
 ![Sonar Coverage](https://img.shields.io/sonar/coverage/Moutah_laravel-passport-spa-js?server=https%3A%2F%2Fsonarcloud.io)
+[![install size](https://packagephobia.now.sh/badge?p=laravel-passport-spa-js)](https://packagephobia.now.sh/result?p=laravel-passport-spa-js)
 [![License](https://img.shields.io/:license-mit-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
+
+This package handles the token management from a [Laravel](https://github.com/laravel/laravel) back-end using [Passport](https://github.com/laravel/passport) authentification in a Single-Page Application using the OAuth [authorization flow (PKCE)](https://www.oauth.com/oauth2-servers/pkce/). It allows you to safely get tokens without storing them in the local storage or cookies.
+
+### Content
+
+- [Installation](#installation)
+- [Getting started](#getting-started)
+- [Documentation](#documentation)
+- [Support and Feedback](#support-and-feedback)
+- [License](#license)
 
 ### How does it work
 
@@ -20,6 +29,8 @@ The chart below illustrates the detailed flow of the package:
 
 > This package has been inspired by [@auth0/auth0-spa-js](https://github.com/auth0/auth0-spa-js).
 
+<a name="installation"></a>
+
 ## Installation
 
 Using [npm](https://npmjs.org/):
@@ -28,7 +39,7 @@ Using [npm](https://npmjs.org/):
 npm install laravel-passport-spa-js
 ```
 
-> Package registration ongoing
+<a name="getting-started"></a>
 
 ## Getting started
 
@@ -91,7 +102,7 @@ lpClient.handleRedirectCallback().then(signInResult => {});
 
 This should be present on the page reached by the specified `redirect_uri` to extract and consume the given authorization code.
 
-By using the Promise syntax you can immediately redirect your user to another page of your app and have the promise resolve in the background. If the redirect is done by changing the `location`, the Promise will most likely not be fullfiled but now that your user has a session at the authentication server, you can simply get a token (see below) an the sign in will be performed silently through an iframe.
+By using the Promise syntax you can immediately redirect your user to another page of your app and have the promise resolve in the background. If the redirect is done by changing the `location`, the Promise will most likely not be fullfiled but now that your user has a session at the authentication server, you can simply get a token (see below) and the sign in will be performed silently through an iframe.
 
 ### 4. Getting a token
 
@@ -116,6 +127,8 @@ lpClient.signOut();
 ```
 
 This will clear the token cache.
+
+<a name="documentation"></a>
 
 ## Documentation
 
@@ -148,27 +161,27 @@ const laravelClientOptions = {
    * The prefix fow Passport's routes on the authentication server.
    * Defaults to `'oauth'`.
    */
-  oauthPrefix?: string;
+  oauthPrefix: string;
 
   /**
    * The default scope to be used on authentication requests.
    * Defaults to `'*'`.
    */
-  scope?: string;
+  scope: string;
 
   /**
    * A maximum number of seconds to wait before declaring background calls to /
    * authorize as failed for timeout.
    * Defaults to `60`.
    */
-  authorizeTimeoutInSeconds?: number;
+  authorizeTimeoutInSeconds: number;
 
   /**
    * Whether a new sign in should be attempted if no valid token is present when
    * `getToken()` is called.
    * Defaults to `true`.
    */
-  isAutoRefresh?: boolean;
+  isAutoRefresh: boolean;
 };
 
 const lpClient = createLaravelPassportClient(laravelClientOptions);
@@ -192,63 +205,67 @@ lpClient.isAutoRefresh;
 
 ### Available methods
 
-#### `lpClient.getToken()`
+#### lpClient.getToken()
 
 > Returns `Promise<string | null>`
 
 Get the token this client has in cache. Resolves on the token (`string`) or `null` if no valid token present and `lpClient.isAutoRefresh` is `false`.
 
-#### `lpClient.getTokenScopes()`
+#### lpClient.getTokenScopes()
 
 > Returns `string[] | null`
 
 Get this client token's scope(s) as an array. Returns `null` if no token present. Note that the scopes are returned even if the token is expired.
 
-#### `lpClient.getTokenExpiration()`
+#### lpClient.getTokenExpiration()
 
 > Returns `Date | null`
 
 Get this client token's expiration date. Returns `null` if no token present. Note that the Date is returned even if the token is expired.
 
-#### `lpClient.isTokenValid()`
+#### lpClient.isTokenValid()
 
 > Returns `boolean`
 
 Returns `true` if the client has a token which is not expired, `false` otherwise.
 
-#### `lpClient.getSignedInUserId()`
+#### lpClient.getSignedInUserId()
 
 > Returns `number | null`
 
 Get this client token's user id. Returns `null` if no valid token present.
 
-#### `lpClient.signIn(scope?: string)`
+#### lpClient.signIn(scope?: string)
 
 > Returns `Promise<boolean>`
 
 Sign the client in. Starts with the iframe flow and fallsback to redirect flow if needed. If provided, the given `scope` value will override the client's scope. Resolves on `true` if the sign in has been successful, `false` otherwise.
 
-#### `lpClient.signInWithRedirect(scope?: string)`
+#### lpClient.signInWithRedirect(scope?: string)
 
 > Returns `Promise<void>`
 
 Redirect to the authorize URL (`'/oauth/authorize'` by default) with appropriate parameters. If provided, the given scope value will override the client's scope.
 
-#### `lpClient.handleRedirectCallback()`
+#### lpClient.handleRedirectCallback()
 
 > Returns `Promise<boolean>`
 
 Extract the authorization code returned in the query string and exchange it for a new token. Resolves on `true` if the sign in has been successful, `false` otherwise.
 
-#### `lpClient.signOut()`
+#### lpClient.signOut()
 
 > Returns `void`
 
 Remove the cached token.
 
+<a name="support-and-feedback"></a>
+
 ## Support and Feedback
 
 For support or to provide feedback, please [raise an issue](https://github.com/Moutah/laravel-passport-spa-js/issues) on the GitHub page.
+
+<a name="license"></a>
 
 ## License
 
