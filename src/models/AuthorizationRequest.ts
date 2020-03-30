@@ -63,7 +63,7 @@ export class AuthorizationRequest implements AuthorizationRequestOptions {
       this.code_challenge = bufferToBase64UrlEncoded(code_challengeBuffer);
     }
 
-    return this.code_challenge as string;
+    return this.code_challenge;
   }
 
   /**
