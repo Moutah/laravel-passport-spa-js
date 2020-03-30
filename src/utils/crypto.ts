@@ -3,7 +3,7 @@
  */
 export const getCrypto = (): Crypto => {
   //ie 11.x uses msCrypto
-  return (window.crypto || (window as any).msCrypto) as Crypto;
+  return window.crypto || (window as any).msCrypto;
 };
 
 /**

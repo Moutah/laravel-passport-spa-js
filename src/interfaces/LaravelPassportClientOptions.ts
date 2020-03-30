@@ -5,15 +5,20 @@ export interface LaravelPassportClientOptions {
   domain: string;
 
   /**
-   * The prefix fow Passport's routes.
-   * Defaults to `'oauth`.
-   */
-  oauthPrefix?: string;
-
-  /**
    * The Client ID.
    */
   client_id: string;
+
+  /**
+   * The default URL where Laravel Passport will redirect your browser to with the authentication result.
+   */
+  redirect_uri: string;
+
+  /**
+   * The prefix fow Passport's routes on the authentication server.
+   * Defaults to `'oauth'`.
+   */
+  oauthPrefix?: string;
 
   /**
    * The default scope to be used on authentication requests.
@@ -22,20 +27,14 @@ export interface LaravelPassportClientOptions {
   scope?: string;
 
   /**
-   * The default URL where Laravel Passport will redirect your browser to with the authentication result.
-   */
-  redirect_uri: string;
-
-  /**
-   * The value in seconds used to account for clock skew in JWT expirations.
-   * Typically, this value is no more than a minute or two at maximum.
-   * Defaults to 60s.
-   */
-  leeway?: number;
-
-  /**
    * A maximum number of seconds to wait before declaring background calls to /authorize as failed for timeout.
    * Defaults to 60s.
    */
   authorizeTimeoutInSeconds?: number;
+
+  /**
+   * Whether a new sign in should be attempted if no valid token is present when `getToken()` is
+   * called.
+   */
+  isAutoRefresh?: boolean;
 }

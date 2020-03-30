@@ -1,6 +1,6 @@
 {
   "name": "laravel-passport-spa-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A library to use Laravel's Passport Authorization flow (PKCE) from a Javascript web app context.",
   "main": "dist/index.js",
   "types": "dist/typings/index.d.ts",
@@ -21,9 +21,11 @@
     "passport",
     "pkce",
     "js",
+    "web",
     "front",
     "oauth",
-    "web",
+    "token",
+    "authorization",
     "Authorization Code Grant Flow",
     "SPA authentication"
   ],

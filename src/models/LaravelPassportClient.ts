@@ -66,6 +66,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
     this._oauthPrefix = options.oauthPrefix;
     this._scope = options.scope;
     this._authorizeTimeoutInSeconds = options.authorizeTimeoutInSeconds;
+    this._isAutoRefresh = options.isAutoRefresh;
 
     // internal
     this._token = undefined;
@@ -138,6 +139,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * ```
    *
    * Sign the client in. Starts with the iframe flow and fallsback to redirect flow if needed.
+   * Resolves on `true` if the sign in has been successful, `false` otherwise.
    * @param {?string} scope
    */
   async signIn(scope?: string): Promise<boolean> {
@@ -169,7 +171,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * await lpClient.handleRedirectCallback();
    * ```
    *
-   * Extract the code returned in the query string, build the Authorization Signature and calls
+   * Extract the authorization code returned in the query string, build the Authorization Signature and calls
    * `exchangeAuthorizationForToken` with it. Returns `true` if a token is obtained, `false`
    * otherwise.
    */
