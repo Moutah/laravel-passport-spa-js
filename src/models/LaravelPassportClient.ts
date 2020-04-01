@@ -14,6 +14,9 @@ import { JWT } from './JWT';
 import { AuthorizationSignature } from '../interfaces/AuthorizationSignature';
 import { runIframe } from '../utils/iframe';
 
+// const lock = new Lock();
+let currentSignInRequest: Promise<boolean> | undefined;
+
 export class LaravelPassportClient implements LaravelPassportClientOptions {
   domain: string;
   client_id: string;
@@ -241,27 +244,45 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
    * @param scope
    */
   private async executeSignIn(method: string, scope?: string): Promise<boolean> {
-    // prepare authorization request
-    const authorizationRequest = this.buildAuthorizationRequest(scope);
-    authorizationRequest.storeState();
+    // create unique sign in request
+    if (!currentSignInRequest) {
+      currentSignInRequest = new Promise<boolean>(async (resolve, reject) => {
+        // prepare authorization request
+        const authorizationRequest = this.buildAuthorizationRequest(scope);
+        authorizationRequest.storeState();
 
-    // make url
-    const url = await this.buildAuthorizeUrl(authorizationRequest);
+        // make url
+        const url = await this.buildAuthorizeUrl(authorizationRequest);
 
-    switch (method) {
-      case 'redirect':
-        window.location.assign(url);
-        return false;
+        switch (method) {
+          case 'redirect':
+            window.location.assign(url);
+            reject();
+            break;
 
-      case 'iframe':
-      default:
-        try {
-          const queryString = await runIframe(url);
-          return await this.convertToToken(queryString);
-        } catch {
-          return false;
+          case 'iframe':
+          default:
+            try {
+              const queryString = await runIframe(url);
+              resolve(await this.convertToToken(queryString));
+              return;
+            } catch {
+              reject();
+            }
         }
+
+        // if we get here, the sign in failed
+        reject();
+      })
+        .catch(() => {
+          return false;
+        })
+        .finally(() => {
+          currentSignInRequest = undefined;
+        });
     }
+
+    return currentSignInRequest;
   }
 
   /**
