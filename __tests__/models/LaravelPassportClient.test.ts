@@ -71,6 +71,7 @@ const setup = (): {
 
   // mock utils iframe
   const iframe = require('../../src/utils/iframe');
+  iframe.runIframe.mockClear();
   iframe.runIframe.mockReturnValue(`code=${TEST_CODE}&state=${TEST_STATE}`);
 
   // mock utils xhr
@@ -254,6 +255,27 @@ describe('LaravelPassportClient', () => {
 
       await expect(client.signIn()).resolves.toBe(true);
       await expect(client.getToken()).resolves.toBeTruthy();
+    });
+
+    it('sign in requests are grouped', async () => {
+      expect.assertions(6);
+      const { client, iframe } = setup();
+
+      // create multiple sign in request
+      const signIns = [
+        client.signIn(),
+        client.signIn(),
+        client.signIn(),
+        client.signIn(),
+        client.signIn(),
+      ];
+
+      // run all sign in
+      const signInsResults = await Promise.all(signIns);
+      signInsResults.forEach(result => expect(result).toBe(true));
+
+      // iframe called only once
+      expect(iframe.runIframe).toHaveBeenCalledTimes(1);
     });
 
     it('signs in with redirect if iframe fails', async () => {

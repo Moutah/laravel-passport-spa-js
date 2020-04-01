@@ -1,6 +1,6 @@
 {
   "name": "laravel-passport-spa-js",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Toolkit to use Laravel's Passport Authorization flow (PKCE) from a Javascript web app context.",
   "main": "dist/index.js",
   "types": "dist/typings/index.d.ts",
@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/Moutah/laravel-passport-spa-js#readme",
   "dependencies": {
-    "browser-tabs-lock": "^1.2.8",
     "unfetch": "^4.1.0"
   },
   "devDependencies": {
