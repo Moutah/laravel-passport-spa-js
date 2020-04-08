@@ -10,7 +10,7 @@ global.TextEncoder = TextEncoder;
 
 const setup = (): any => {
   const iframeEvents: { [eventName: string]: () => any } = {};
-  const iframe = {
+  const mockedIframe = {
     setAttribute: jest.fn(),
     contentWindow: {
       addEventListener: jest.fn((eventName: string, callback: () => any): void => {
@@ -23,25 +23,27 @@ const setup = (): any => {
     addEventListener: jest.fn((eventName: string, callback: () => any): void => {
       iframeEvents['iframe.' + eventName] = callback;
     }),
-    manuallyTriggerEvent: (eventName: string): any => {
+    style: { display: '' },
+    isDeleted: false,
+    manuallyTriggerEvent(eventName: string): any {
       if (iframeEvents[eventName]) {
         iframeEvents[eventName]();
       }
     },
-    style: { display: '' },
   };
 
   // mock createElement expecting iframe element
   window.document.createElement = jest.fn(type => {
     expect(type).toBe('iframe');
-    return iframe;
+    return mockedIframe;
   }) as any;
 
   // mock append / remove child
   window.document.body.appendChild = jest.fn();
   window.document.body.removeChild = jest.fn();
+  window.document.body.contains = jest.fn((node: any) => node && !node.isDeleted);
 
-  return { iframe };
+  return { iframe: mockedIframe };
 };
 
 describe('utils.iframe', () => {
@@ -54,6 +56,12 @@ describe('utils.iframe', () => {
 
       // manually tirgger event on next loop
       Promise.resolve().then(() => {
+        iframe.manuallyTriggerEvent('contentWindow.DOMContentLoaded');
+
+        // manually remove iframe
+        iframe.isDeleted = true;
+
+        // subsequent load-like events are ignored
         iframe.manuallyTriggerEvent('contentWindow.DOMContentLoaded');
       });
       const iframeResult = await runIframe(url);
@@ -103,6 +111,25 @@ describe('utils.iframe', () => {
       expect.assertions(3); // third is in addElement mock
       await expect(runIframe(url)).rejects.toEqual('Timeout');
       expect(window.document.body.removeChild).toHaveBeenCalledWith(iframe);
+    });
+
+    it('handles timeout even if node removed already', async () => {
+      jest.useFakeTimers();
+      const { iframe } = setup();
+
+      const url = `https://www.url.com/?${TEST_QUERY_STRING}`;
+
+      Promise.resolve().then(() => {
+        // mark iframe as removed
+        iframe.isDeleted = true;
+
+        // fast forward on next loop
+        jest.runAllTimers();
+      });
+
+      expect.assertions(3); // third is in addElement mock
+      await expect(runIframe(url)).rejects.toEqual('Timeout');
+      expect(window.document.body.removeChild).not.toHaveBeenCalled();
     });
 
     it('handles custom timeout', async () => {

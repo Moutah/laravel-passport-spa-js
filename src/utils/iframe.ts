@@ -20,23 +20,27 @@ export const runIframe = (
 
     // timeout fallback
     const cleanupTimeout = setTimeout(() => {
-      window.document.body.removeChild(iframe);
+      if (window.document.body.contains(iframe)) {
+        window.document.body.removeChild(iframe);
+      }
       reject('Timeout');
     }, timeoutInSeconds * 1000);
 
     // handle iframe loaded
     const iframeLoadedHandler = (): void => {
-      let search = '';
-      try {
-        search = iframe.contentWindow ? iframe.contentWindow.location.search : '';
-      } catch {
-        // iframe cannot be accessed
-      }
+      if (window.document.body.contains(iframe)) {
+        let search = '';
+        try {
+          search = iframe.contentWindow ? iframe.contentWindow.location.search : '';
+        } catch {
+          // iframe cannot be accessed
+        }
 
-      // remove iframe and resolve
-      clearTimeout(cleanupTimeout);
-      window.document.body.removeChild(iframe);
-      resolve(search.substr(1));
+        // remove iframe and resolve
+        clearTimeout(cleanupTimeout);
+        window.document.body.removeChild(iframe);
+        resolve(search.substr(1));
+      }
     };
 
     // add iframe to DOM
