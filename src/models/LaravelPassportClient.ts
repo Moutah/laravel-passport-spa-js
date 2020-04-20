@@ -186,7 +186,14 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
     const queryString = window.location.search.substr(1);
 
     // attempt to sign in with authorization
-    return await this.convertToToken(queryString);
+    let isSignedIn = false;
+    try {
+      isSignedIn = await this.convertToToken(queryString);
+    } catch {
+      // could not convert query string to token
+    }
+
+    return isSignedIn;
   }
 
   /**

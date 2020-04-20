@@ -350,16 +350,14 @@ describe('LaravelPassportClient', () => {
       );
     });
 
-    it('throws error if no parameter given to callback', async () => {
+    it('fails if no parameter given to callback', async () => {
       const { client } = setup();
 
       // set redirect to epmty
       global.location.search = '';
 
       expect.assertions(1);
-      await expect(client.handleRedirectCallback()).rejects.toThrow(
-        'No query response parameters found.',
-      );
+      await expect(client.handleRedirectCallback()).resolves.toBe(false);
     });
 
     it('fails and sign out if no state is found in storage', async () => {
