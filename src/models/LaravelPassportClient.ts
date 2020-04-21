@@ -274,6 +274,7 @@ export class LaravelPassportClient implements LaravelPassportClientOptions {
               resolve(await this.convertToToken(queryString));
               return;
             } catch {
+              authorizationRequest.clearState();
               reject();
             }
         }

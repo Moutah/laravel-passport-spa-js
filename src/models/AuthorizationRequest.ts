@@ -75,4 +75,11 @@ export class AuthorizationRequest implements AuthorizationRequestOptions {
       JSON.stringify({ v: this.code_verifier, s: this.scope }),
     );
   }
+
+  /**
+   * Remove the code verifier and requested scope from the client's storage.
+   */
+  clearState(): void {
+    window.localStorage.removeItem(STORAGE_PREFIX + this.state);
+  }
 }
