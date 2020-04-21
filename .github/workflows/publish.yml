@@ -1,0 +1,30 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: CD
+
+jobs:
+  build:
+    name: Publish package on NPM
+    runs-on: ubuntu-latest
+
+    steps:
+      # get code
+      - name: Checkout repository
+        uses: actions/checkout@master
+
+      # setup node & NPM
+      - name: Setup Node and NPM
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+
+      # publish to NPM
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
